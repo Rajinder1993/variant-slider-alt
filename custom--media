@@ -1,0 +1,137 @@
+
+<!-- {% for image in product.images %} 
+{% assign img_alt = image.alt %}
+<div data-alt="{{ image.alt }}" class="slide-image  common-slide {% if img_alt == selected_option %} active_image {% endif %}">
+<img src="{{ image.src | product_img_url: 'master' }}" alt="{{ image.alt }}"> 
+</div>
+{%endfor%} -->
+
+{% assign current_variant = product.selected_or_first_available_variant %}
+  {% assign selected_option = current_variant.options[1] | strip %}
+
+<div class="main--slider">
+
+</div>
+
+
+<div class="thumbnail--slider">
+
+</div>
+
+
+<style>
+.main--slider .slick-slide img {
+    width: 100%;
+}
+  .thumbnail--slider .slick-slide img {
+    width: 70px;
+    height: 70px;
+    padding: 0;
+    border: 2px solid #054300;
+    border-radius: 50%!important;
+}
+
+.thumbnail--slider {
+    position: absolute;
+    bottom: 0;
+    left: 100px;
+    right: 100px;
+    margin: 0;
+}
+</style>
+<script>
+
+  function render_slider(color_name){
+    var productImages = [];
+{% for image in product.images %}
+  var imageObject = {
+    "src": "{{ image.src | img_url: 'master' }}",
+    "alt": "{{ image.alt | escape }}",
+  };
+  productImages.push(imageObject);
+{% endfor %}
+
+const main_slider = $(".main--slider");
+const thumbnail_slider = $(".thumbnail--slider");
+main_slider.empty();
+productImages.forEach(function(image) {
+    if (image.alt === color_name || image.alt === 'show-all') {
+    const imgElement = $("<img>").attr("src", image.src).attr("alt", image.alt);
+    const divElement = $("<div>").append(imgElement);
+    main_slider.append(divElement);
+  }
+});
+    thumbnail_slider.empty();
+  productImages.forEach(function(image) {
+   if (image.alt === color_name || image.alt === 'show-all') {
+    const imgElement = $("<img>").attr("src", image.src).attr("alt", image.alt);
+    const divElement = $("<div>").append(imgElement);
+    thumbnail_slider.append(divElement);
+  }
+});
+$('.main--slider').removeClass("slick-initialized slick-slider");
+    $('.thumbnail--slider').removeClass("slick-initialized slick-slider");
+ $('.main--slider').slick({
+       slidesToShow: 1,
+       slidesToScroll: 1,
+       arrows: false,
+       fade: false,
+       dots: false,
+       adaptiveHeight: false,
+       asNavFor: '.thumbnail--slider'
+    });
+    $('.main--slider').css('visibility','visible');
+       $('.thumbnail--slider').slick({
+       infinite:false,
+       slidesToShow: 5,
+       slidesToScroll: 1,
+       vertical: false,
+       arrows: false,
+       asNavFor: '.main--slider',
+       dots: false,
+       focusOnSelect: true,
+       verticalSwiping:false,
+       responsive: [
+       {
+        breakpoint: 992,
+        settings: {
+        vertical: false,
+        dots: false,
+       }},
+       {
+        breakpoint: 768,
+        settings: {
+        vertical: false,
+        dots: false,
+       }},
+       {
+        breakpoint: 580,
+        settings: {
+        vertical: false,
+        slidesToShow: 5,
+        dots: false,
+        arrows: false,
+        swipeToSlide: true,	
+       }},
+       {
+        breakpoint: 380,
+        settings: {
+        vertical: false,
+        slidesToShow: 4,
+        swipeToSlide: true,
+       }}
+       ]
+       });
+  }
+ 
+$(document).ready(function(){
+  var color_name = '{{selected_option}}';
+  alert(color_name)
+render_slider(color_name);
+  $(document).on('click', '.swatch-element.color' , function() {
+    var color_name = $(this).attr('data-value');
+    render_slider(color_name);
+})
+})
+
+</script>
